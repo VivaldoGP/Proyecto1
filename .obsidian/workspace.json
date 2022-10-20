@@ -1,0 +1,144 @@
+{
+  "main": {
+    "id": "900074d70dcedb2d",
+    "type": "split",
+    "children": [
+      {
+        "id": "30cbe7658788674b",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "963db404cb5e9cdd",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Proyecto1_ProgramacionGeomatica.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "8e6f8b6f39d4f1bd",
+    "type": "split",
+    "children": [
+      {
+        "id": "f2347654bd676649",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "3761e00e0d78df93",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "f377466417c900d8",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "9223da0596dd0975",
+            "type": "leaf",
+            "state": {
+              "type": "starred",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "cefdeedafc662884",
+    "type": "split",
+    "children": [
+      {
+        "id": "7fafad543aac1494",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "9aec7dc7d971579d",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Proyecto1_ProgramacionGeomatica.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "eda5cf7138f8e22e",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "Proyecto1_ProgramacionGeomatica.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "5d07dddccdfeaa12",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
+          },
+          {
+            "id": "8ddde80bde128560",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "Proyecto1_ProgramacionGeomatica.md"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "ribbon": {
+    "mostRecentAction": ""
+  },
+  "active": "963db404cb5e9cdd",
+  "lastOpenFiles": []
+}
