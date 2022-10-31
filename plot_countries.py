@@ -1,3 +1,4 @@
+
 from osgeo import ogr
 from os import getcwd, path, scandir
 import matplotlib.pyplot as plt
@@ -49,23 +50,40 @@ def plotPolygon(poly, symbol='k-'):
         plt.plot(x, y, symbol)
 
 
-def plotByPeriod(layer, period, symbol, limitOfFeatures=10):
-        sql = f'''SELECT * FROM "{layer}" ORDER BY "{period}" DESC LIMIT {limitOfFeatures}'''
+def plotByPeriod(layer, period, symbol):
+        sql = f'''SELECT * FROM "{layer}" ORDER BY "{period}" DESC'''
         for row in ds.ExecuteSQL(sql, dialect='SQLite'):
-            geom = row.geometry()
-            geomType = geom.GetGeometryType()
-            if geomType == ogr.wkbPolygon:
-                plotPolygon(geom, symbol)
-            elif geomType == ogr.wkbMultiPolygon:
-                for i in range(geom.GetGeometryCount()):
-                    subgeom = geom.GetGeometryRef(i)
-                    plotPolygon(subgeom, symbol)
+            query = filterCountries(country=row, numberOfCountries=featureCount(layer=layer), howMany=percentageOfFeatures(fc=featureCount(layer=layer)))
+            for row in query:
+                geom = row.geometry()
+                geomType = geom.GetGeometryType()
+                if geomType == ogr.wkbPolygon:
+                    plotPolygon(geom, symbol='b')
+                elif geomType == ogr.wkbMultiPolygon:
+                    for i in range(geom.GetGeometryCount()):
+                        subgeom = geom.GetGeometryRef(i)
+                        plotPolygon(subgeom, symbol='y')
             
 
+def filterCountries(country, numberOfCountries, howMany):
+
+    i = 0
+    isInList = []
+
+    for country in range(numberOfCountries):
+        isInList.append(country)
+        i += 1
+        if i == howMany:
+            break
+
+    return isInList
+
+""" print(filterCountries(numberOfCountries=featureCount(layer=layer), howMany=percentageOfFeatures(featureCount(layer))))
+ """
 for period in getColumns(layer):            
-    plotByPeriod(layer=layer, period=period, symbol='y', limitOfFeatures=percentageOfFeatures(fc=featureCount(layer=layer), percentage=10))
+    plotByPeriod(layer=layer, period=period, symbol='y')
     plt.axis('equal')
     plt.gca().get_xaxis().set_ticks([])
     plt.gca().get_yaxis().set_ticks([])
-    plt.title(f"period")
+    plt.title(f"{period}")
     plt.show()
