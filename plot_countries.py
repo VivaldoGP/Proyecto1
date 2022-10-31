@@ -28,7 +28,7 @@ def featureCount(layer):
     return fc
 
 
-def percentageOfFeatures(fc, percentage):
+def percentageOfFeatures(fc, percentage=20):
     return round((percentage/100) * fc)
 
 def getColumns(layer):
@@ -49,15 +49,23 @@ def plotPolygon(poly, symbol='k-'):
         plt.plot(x, y, symbol)
 
 
-def plotByPeriod(layer, periods):
-    for period in periods:
-        sql = f'''SELECT * FROM "{layer}" ORDER BY "{period}" DESC'''
+def plotByPeriod(layer, period, symbol, limitOfFeatures=10):
+        sql = f'''SELECT * FROM "{layer}" ORDER BY "{period}" DESC LIMIT {limitOfFeatures}'''
         for row in ds.ExecuteSQL(sql, dialect='SQLite'):
             geom = row.geometry()
-            name = row.GetField('NAME_EN')
-            iso = row.GetField('ISO_A3')
-            print(name, iso)
+            geomType = geom.GetGeometryType()
+            if geomType == ogr.wkbPolygon:
+                plotPolygon(geom, symbol)
+            elif geomType == ogr.wkbMultiPolygon:
+                for i in range(geom.GetGeometryCount()):
+                    subgeom = geom.GetGeometryRef(i)
+                    plotPolygon(subgeom, symbol)
+            
 
-plotByPeriod(layer=layer, periods=getColumns(layer))
-
-print(percentageOfFeatures(fc=featureCount(layer), percentage=20))
+for period in getColumns(layer):            
+    plotByPeriod(layer=layer, period=period, symbol='y', limitOfFeatures=percentageOfFeatures(fc=featureCount(layer=layer), percentage=10))
+    plt.axis('equal')
+    plt.gca().get_xaxis().set_ticks([])
+    plt.gca().get_yaxis().set_ticks([])
+    plt.title(f"period")
+    plt.show()
