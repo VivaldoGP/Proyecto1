@@ -1,5 +1,6 @@
 from osgeo import ogr
 from os import getcwd, path, scandir
+import matplotlib.pyplot as plt
 import sys
 
 root = sys.argv[1]
@@ -31,20 +32,32 @@ def percentageOfFeatures(fc, percentage):
     return round((percentage/100) * fc)
 
 def getColumns(layer):
+
+    columns = []
+
     lyr = ds.GetLayer(layer)
     for field in lyr.schema:
         if field.GetTypeName() == "Real" and len(field.name) > 4:
-            print(field.name)
+            columns.append(field.name)
 
-getColumns(layer=layer)
+    return columns
 
+def plotPolygon(poly, symbol='k-'):
+    for i in range(poly.GetGeometryCount()):
+        subgeom = poly.GetGeometryRef(i)
+        x, y = zip(*subgeom.GetPoints())
+        plt.plot(x, y, symbol)
+
+
+def plotByPeriod(layer, periods):
+    for period in periods:
+        sql = f'''SELECT * FROM "{layer}" ORDER BY "{period}" DESC'''
+        for row in ds.ExecuteSQL(sql, dialect='SQLite'):
+            geom = row.geometry()
+            name = row.GetField('NAME_EN')
+            iso = row.GetField('ISO_A3')
+            print(name, iso)
+
+plotByPeriod(layer=layer, periods=getColumns(layer))
 
 print(percentageOfFeatures(fc=featureCount(layer), percentage=20))
-period = str(input('Periodo: '))
-limit = int(input('Limit: '))
-sql = f'''SELECT * FROM "final" ORDER BY "{period}" DESC LIMIT {limit};'''
-lyr = ds.ExecuteSQL(sql, dialect='SQLite')
-a = lyr.GetFeatureCount()
-for i in lyr:
-    print(i.GetField("1960"), i.GetField("NAME_EN"))
-print(a)
