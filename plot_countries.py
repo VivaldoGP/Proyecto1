@@ -1,8 +1,8 @@
 
-from cProfile import label
 from osgeo import ogr
 from os import getcwd, path, scandir
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 import sys
 
 root = sys.argv[1]
@@ -44,12 +44,12 @@ def getColumns(layer):
 
     return columns
 
-def plotPolygon(poly, ax, symbol='k-'):
+def plotPolygon(poly, ax, symbol='#d7d2cc'):
     for i in range(poly.GetGeometryCount()):
         subgeom = poly.GetGeometryRef(i)
         x, y = zip(*subgeom.GetPoints())
         
-        return ax.plot(x, y, symbol)
+        return ax.fill(x, y, symbol, alpha=0.9, facecolor=symbol, edgecolor='k', linewidth=0.3)
 
 
 def plotByPeriod(layer, period, symbol, percentage):
@@ -57,11 +57,21 @@ def plotByPeriod(layer, period, symbol, percentage):
         color = symbol
         fc = featureCount(layer=layer)
         numberOfFeatures = percentageOfFeatures(fc, percentage=20)
-        counter = 0
+        counter = 1
         
         fig, ax = plt.subplots()
 
         for row in ds.ExecuteSQL(sql, dialect='SQLite'):
+                if counter <= numberOfFeatures:
+                    color = '#8e0e00'
+                    print(row.GetField('NAME_EN'), counter)
+                elif counter < fc - numberOfFeatures and counter > numberOfFeatures:
+                    color = '#d7d2cc'
+                    print(row.GetField('NAME_EN'), counter)
+                elif counter >= fc - numberOfFeatures:
+                    color = '#76b852'
+                    print(row.GetField('NAME_EN'), counter)
+
                 geom = row.geometry()
                 geomType = geom.GetGeometryType()
                 if geomType == ogr.wkbPolygon:
@@ -70,21 +80,20 @@ def plotByPeriod(layer, period, symbol, percentage):
                     for i in range(geom.GetGeometryCount()):
                         subgeom = geom.GetGeometryRef(i)
                         plotPolygon(subgeom, ax=ax,symbol=color)
-                #print(row.GetField('NAME_EN'))
+            
                 counter += 1
-                if counter <= numberOfFeatures:
-                    color = 'r'
-                elif counter < fc - numberOfFeatures and counter > numberOfFeatures:
-                    color = 'b'
-                elif counter > fc - numberOfFeatures:
-                    color = 'g'
+                
+        topCountries = mpatches.Patch(color='#8e0e00', label="20% Países con mayor crecimiento poblacional")
+        bottomCountries = mpatches.Patch(color='#76b852', label='20% Países con menor crecimiento poblacional')
 
         ax.axis('equal')
         ax.set_xlabel('Longitud')
         ax.set_ylabel('Latitud')
-        ax.set_title(f'{period}')
-        ax.grid(color='black')
-        ax.legend()
+        ax.set_title(f'Variación poblacional del período {period}')
+        ax.grid(color='black', linestyle='--', linewidth=0.5, alpha=0.5)
+        ax.legend(handles=[topCountries, bottomCountries])
+        ax.text(100, -75, 'Autor: Vivaldo Isaí García Perales\nAsignatura: Programación Aplicada a la Geomática', horizontalalignment='left',
+        verticalalignment='center', fontsize='smaller', bbox={'facecolor':'w', 'pad':10}, style='italic')
         plt.show()
 
 def filterCountries(country, numberOfCountries, howMany):
