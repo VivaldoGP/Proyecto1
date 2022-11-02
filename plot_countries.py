@@ -1,4 +1,5 @@
 
+import string
 from osgeo import ogr
 from os import getcwd, path, scandir
 import matplotlib.pyplot as plt
@@ -50,20 +51,31 @@ def plotPolygon(poly, symbol='k-'):
         plt.plot(x, y, symbol)
 
 
-def plotByPeriod(layer, period, symbol):
+def plotByPeriod(layer, period, symbol, percentage):
         sql = f'''SELECT * FROM "{layer}" ORDER BY "{period}" DESC'''
+        color = symbol
+        fc = featureCount(layer=layer)
+        numberOfFeatures = percentageOfFeatures(fc, percentage=20)
+        counter = 0
+        print(fc)
+        print(numberOfFeatures)
         for row in ds.ExecuteSQL(sql, dialect='SQLite'):
-            query = filterCountries(country=row, numberOfCountries=featureCount(layer=layer), howMany=percentageOfFeatures(fc=featureCount(layer=layer)))
-            for row in query:
                 geom = row.geometry()
                 geomType = geom.GetGeometryType()
                 if geomType == ogr.wkbPolygon:
-                    plotPolygon(geom, symbol='b')
+                    plotPolygon(geom, symbol= color)
                 elif geomType == ogr.wkbMultiPolygon:
                     for i in range(geom.GetGeometryCount()):
                         subgeom = geom.GetGeometryRef(i)
-                        plotPolygon(subgeom, symbol='y')
-            
+                        plotPolygon(subgeom, symbol=color)
+                #print(row.GetField('NAME_EN'))
+                counter += 1
+                if counter <= numberOfFeatures:
+                    color = 'r'
+                elif counter < fc - numberOfFeatures and counter > numberOfFeatures:
+                    color = 'b'
+                elif counter > fc - numberOfFeatures:
+                    color = 'g'
 
 def filterCountries(country, numberOfCountries, howMany):
 
@@ -80,10 +92,10 @@ def filterCountries(country, numberOfCountries, howMany):
 
 """ print(filterCountries(numberOfCountries=featureCount(layer=layer), howMany=percentageOfFeatures(featureCount(layer))))
  """
-for period in getColumns(layer):            
-    plotByPeriod(layer=layer, period=period, symbol='y')
-    plt.axis('equal')
-    plt.gca().get_xaxis().set_ticks([])
-    plt.gca().get_yaxis().set_ticks([])
-    plt.title(f"{period}")
-    plt.show()
+#for period in getColumns(layer):            
+plotByPeriod(layer=layer, period="2020-2021", symbol='k', percentage=30)
+plt.axis('equal')
+plt.gca().get_xaxis().set_ticks([])
+plt.gca().get_yaxis().set_ticks([])
+plt.title(f"2010-2011")
+plt.show()
