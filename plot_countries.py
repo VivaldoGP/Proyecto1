@@ -53,14 +53,14 @@ def plotPolygon(poly, ax, symbol='#d7d2cc'):
         return ax.fill(x, y, symbol, alpha=0.9, facecolor=symbol, edgecolor='k', linewidth=0.3)
 
 
-def plotByPeriod(layer, period, symbol, percentage, directory):
+def plotByPeriod(layer, period, symbol, percentage, destDir):
         sql = f'''SELECT * FROM "{layer}" ORDER BY "{period}" DESC'''
         color = symbol
         fc = featureCount(layer=layer)
         numberOfFeatures = percentageOfFeatures(fc, percentage=percentage)
         counter = 1
         
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(figsize=(15, 10))
 
         for row in ds.ExecuteSQL(sql, dialect='SQLite'):
                 if counter <= numberOfFeatures:
@@ -93,11 +93,11 @@ def plotByPeriod(layer, period, symbol, percentage, directory):
         ax.set_title(f'Variación poblacional del período {period}')
         ax.grid(color='black', linestyle='--', linewidth=0.5, alpha=0.5)
         ax.legend(handles=[topCountries, bottomCountries])
-        ax.text(100, -75, 'Autor: Vivaldo Isaí García Perales\nAsignatura: Programación Aplicada a la Geomática', horizontalalignment='left',
+        ax.text(80, -75, 'Autor: Vivaldo Isaí García Perales\nAsignatura: Programación Aplicada a la Geomática', horizontalalignment='left',
         verticalalignment='center', fontsize='smaller', bbox={'facecolor':'w', 'pad':10}, style='italic')
-        plt.savefig(fname=f"{directory}\{period}.png")
+        plt.savefig(fname=f"{destDir}\{period}.png")
         print(f"{period} maps was successfully saved.")
-        plt.imshow()
+        #plt.show()
 
 def makedir(pwd, dirName):
     newDir = path.join(pwd,dirName)
@@ -105,5 +105,5 @@ def makedir(pwd, dirName):
     return newDir
 
 for period in getColumns(layer):            
-    plotByPeriod(layer=layer, period=period, symbol='k', percentage=20, directory=makedir(pwd=pwd, dirName="maps"))
+    plotByPeriod(layer=layer, period=period, symbol='k', percentage=20, destDir="maps")
 
